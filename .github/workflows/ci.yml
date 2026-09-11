@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Cancel superseded runs on the same ref to save CI minutes.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # CPU wheels keep CI light.
+  TORCH_INDEX_URL: https://download.pytorch.org/whl/cpu
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install torch CPU wheels
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch --index-url ${{ env.TORCH_INDEX_URL }}
+
+      - name: Install the core dependency
+        run: |
+          # Prefer the published core distribution. `spikeforge` 0.3.0 is not
+          # on PyPI yet, so fall back to a git checkout of `main` as a stopgap
+          # until 0.3.0 is published.
+          pip install "spikeforge~=0.3.0" \
+            || pip install "git+https://github.com/capsize-games/spikeforge.git@main"
+
+      - name: Install spikeforge-hub
+        run: pip install -e ".[dev,nir]"
+
+      - name: Lint (ruff)
+        run: ruff check .
+
+      - name: Test (pytest)
+        run: pytest
