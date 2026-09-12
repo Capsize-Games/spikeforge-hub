@@ -74,10 +74,14 @@ jobs:
           # CI run confirmed the same failure on all four Python versions.
           # It resolves itself once `spikeforge` is made public alongside
           # the spikeforge.net launch, or sooner if a PAT with read access
-          # to both repos is added as a secret and substituted into this
-          # URL (e.g. `https://x-access-token:${{ secrets.SPIKEFORGE_RO_PAT
-          # }}@github.com/...`). Neither of those is something to decide
-          # from inside this workflow file.
+          # to both repos is added as a repository secret and embedded as
+          # an x-access-token credential in this clone URL. (Deliberately
+          # not spelling that out as literal workflow-expression syntax
+          # here -- GitHub Actions evaluates any double-curly-brace
+          # expression it finds anywhere in a `run:` block, comments
+          # included, and a made-up/undefined one broke this workflow's
+          # parse the first time this comment was written.) Neither of
+          # those is something to decide from inside this workflow file.
           pip install "spikeforge~=0.3.0" \
             || pip install "git+https://github.com/capsize-games/spikeforge.git@main#subdirectory=packages/spikeforge"
 
