@@ -7,8 +7,8 @@ invented repository id or an unnamed license is a fabrication and must never be
 committed here.
 
 The record schema is enforced by
-[`hub/entry.py`](entry.py:1) and validated on load by
-[`hub/catalog.py`](catalog.py:1); anything that fails validation is reported
+[`spikeforge_hub/entry.py`](entry.py:1) and validated on load by
+[`spikeforge_hub/catalog.py`](catalog.py:1); anything that fails validation is reported
 through `catalog.issues()` and dropped from `entries()` rather than silently
 accepted.
 
@@ -74,4 +74,6 @@ ingestion capability stays fully available — [`probe.py`](probe.py:1),
 The catalog itself is not the downloader; it is the list of things already
 checked.
 
-See also [`NOTICE.md`](../../../NOTICE.md) for the metadata-only weights policy.
+See also the parent project's
+[`NOTICE.md`](https://github.com/capsize-games/spikeforge/blob/main/NOTICE.md)
+for the metadata-only weights policy.
