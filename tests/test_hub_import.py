@@ -6,10 +6,10 @@ from pathlib import Path
 import numpy as np
 import pytest
 import torch
-
 from spikeforge.network import model_store
 from spikeforge.nir_bridge import save_graph, to_nir
 from spikeforge.topology.registry import build_topology
+
 from spikeforge_hub import cache
 from spikeforge_hub.errors import HubArtifactError
 from spikeforge_hub.import_model import import_model
