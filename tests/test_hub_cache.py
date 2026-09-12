@@ -1,13 +1,14 @@
 """Offline cache path resolution and size accounting."""
 
+import inspect
 import os
 import subprocess
 import sys
 from pathlib import Path
 
 import pytest
-
 from spikeforge import config
+
 from spikeforge_hub import cache
 
 _ROOT = Path(__file__).resolve().parent.parent
@@ -79,7 +80,12 @@ def test_dir_bytes_walks_nested_files(tmp_path: Path) -> None:
 
 def test_config_declares_the_hub_cache_dir() -> None:
     """``config`` exposes the hub cache dir and its env override."""
-    source = (_ROOT / "spikeforge" / "config.py").read_text("utf-8")
+    # ``spikeforge`` is an installed dependency of this package, not a
+    # sibling source tree under ``_ROOT`` (that assumption dates from
+    # before spikeforge-hub was extracted from the spikeforge monorepo
+    # into its own repo). ``inspect.getsource`` finds the module wherever
+    # it actually installed -- editable checkout, sdist, or wheel.
+    source = inspect.getsource(config)
     assert "SPIKEFORGE_HUB_DIR" in source
     assert "HUB_CACHE_DIR" in source
 

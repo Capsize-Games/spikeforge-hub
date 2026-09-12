@@ -22,7 +22,20 @@ jobs:
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
+      # `persist-credentials: false` is required, not cosmetic: by default
+      # checkout writes an AUTHORIZATION extraheader scoped to the whole
+      # `https://github.com/` host (not just this repo) into the git config.
+      # `spikeforge` is not on PyPI yet (see "Install the core dependency"
+      # below), so that step falls back to `git clone` of the sibling
+      # `capsize-games/spikeforge` repo over anonymous HTTPS. With the
+      # extraheader present, git sends this repo's checkout token as auth
+      # for that *different* repo, GitHub rejects it, and the clone fails
+      # non-interactively ("could not read Username for 'https://github.com'").
+      # This job never pushes back to spikeforge-hub, so persisting
+      # credentials buys nothing and only breaks the fallback clone.
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-python@v5
         with:
@@ -32,15 +45,26 @@ jobs:
       - name: Install torch CPU wheels
         run: |
           python -m pip install --upgrade pip
-          pip install torch --index-url ${{ env.TORCH_INDEX_URL }}
+          # `spikeforge` depends on torchvision>=0.20. Installing only
+          # `torch` here left `torchvision` to resolve from the default
+          # PyPI index during the next step, which grabbed a build with a
+          # mismatched ABI (`RuntimeError: operator torchvision::nms does
+          # not exist`) against the CPU-only torch wheel below. Install
+          # both from the CPU index up front, matching the main
+          # `spikeforge` repo's own CI.
+          pip install torch torchvision --index-url ${{ env.TORCH_INDEX_URL }}
 
       - name: Install the core dependency
         run: |
           # Prefer the published core distribution. `spikeforge` 0.3.0 is not
           # on PyPI yet, so fall back to a git checkout of `main` as a stopgap
-          # until 0.3.0 is published.
+          # until 0.3.0 is published. `spikeforge` moved into a monorepo
+          # (capsize-games/spikeforge) where the installable package lives
+          # under `packages/spikeforge`, not the repo root, so the fallback
+          # needs the `#subdirectory=` fragment or pip fails with "does not
+          # appear to be a Python project".
           pip install "spikeforge~=0.3.0" \
-            || pip install "git+https://github.com/capsize-games/spikeforge.git@main"
+            || pip install "git+https://github.com/capsize-games/spikeforge.git@main#subdirectory=packages/spikeforge"
 
       - name: Install spikeforge-hub
         run: pip install -e ".[dev,nir]"
