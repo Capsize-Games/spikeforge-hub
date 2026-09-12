@@ -1,0 +1,87 @@
+# PEP 621 packaging authority for the spikeforge-hub distribution.
+#
+# The distribution owns the ``spikeforge_hub`` import root (catalog, cache, live
+# Hugging Face access, isolated download worker, and the inspect/compat/promote
+# import funnel). It depends on core, but core never depends on it. The
+# ``huggingface_hub`` dependency is a base dependency here, isolated in
+# ``spikeforge_hub.probe`` so the offline catalog still works without network access.
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "spikeforge-hub"
+version = "0.1.0"
+description = "Curated SNN model hub (catalog, cache, download, import) for spikeforge."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Capsize LLC", email = "contact@capsizegames.com" },
+]
+maintainers = [
+    { name = "Capsize LLC", email = "contact@capsizegames.com" },
+]
+keywords = [
+    "spiking neural networks",
+    "model hub",
+    "huggingface",
+    "catalog",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    # The core library owns the interpreter/simulator, ``nir_bridge``, and the
+    # hub cache configuration; this distribution owns catalog/network I/O. The
+    # pin is a pre-1.0 compatible-release: >=0.3.0,<0.4.0.
+    "spikeforge~=0.3.0",
+    "torch>=2.5",
+    "huggingface_hub>=0.20",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "ruff",
+]
+# The nir-backed hub tests (cli/import/inspect/compat) call
+# ``pytest.importorskip("nir")``; this extra supplies the NIR toolchain they
+# exercise on top of the core ``nir_bridge``.
+nir = [
+    "nir>=1.0",
+    "nirtorch>=1.0",
+]
+
+[project.scripts]
+spikeforge-hub = "spikeforge_hub.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/capsize-games/spikeforge-hub"
+Repository = "https://github.com/capsize-games/spikeforge-hub"
+
+[tool.setuptools]
+zip-safe = false
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["spikeforge_hub*"]
+exclude = ["tests*"]
+
+[tool.setuptools.package-data]
+# The catalog and its curation policy are runtime data, not code: without
+# these lines a `pip install spikeforge-hub` wheel would ship `spikeforge_hub/`
+# with no `models.json`, so the offline catalog could not load.
+spikeforge_hub = ["models.json", "CURATION.md"]
