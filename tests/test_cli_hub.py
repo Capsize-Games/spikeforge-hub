@@ -5,8 +5,8 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-
 from spikeforge.network import model_store
+
 from spikeforge_hub import cache, cli
 
 pytest.importorskip("nir")

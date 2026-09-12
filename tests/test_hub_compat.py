@@ -7,9 +7,9 @@ from typing import Optional
 import numpy as np
 import pytest
 import torch
-
 from spikeforge.nir_bridge import save_graph, to_nir
 from spikeforge.topology.registry import build_topology
+
 from spikeforge_hub import compat
 from spikeforge_hub.inspect import inspect_artifact
 
