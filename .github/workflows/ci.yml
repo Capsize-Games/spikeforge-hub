@@ -29,10 +29,16 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: actions/setup-python@v5
+      - uses: astral-sh/setup-uv@v6
         with:
-          python-version: ${{ matrix.python-version }}
-          cache: pip
+          version: "0.8.0"
+
+      - name: Provision matrix Python
+        run: |
+          uv python install "${{ matrix.python-version }}"
+          uv venv --seed --python "${{ matrix.python-version }}" .venv
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
+          echo "VIRTUAL_ENV=$GITHUB_WORKSPACE/.venv" >> "$GITHUB_ENV"
 
       - name: Install torch CPU wheels
         run: |
