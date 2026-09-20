@@ -36,7 +36,7 @@ jobs:
       - name: Provision matrix Python
         run: |
           uv python install "${{ matrix.python-version }}"
-          uv venv --python "${{ matrix.python-version }}" .venv
+          uv venv --seed --python "${{ matrix.python-version }}" .venv
           echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
           echo "VIRTUAL_ENV=$GITHUB_WORKSPACE/.venv" >> "$GITHUB_ENV"
 
