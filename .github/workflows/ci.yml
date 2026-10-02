@@ -16,7 +16,7 @@ env:
 
 jobs:
   test:
-    runs-on: [self-hosted, linux, x64, spikeforge-hub-ci]
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -52,34 +52,11 @@ jobs:
           # `spikeforge` repo's own CI.
           pip install torch torchvision --index-url ${{ env.TORCH_INDEX_URL }}
 
-      # `capsize-games/spikeforge` is private (pre-launch), so the default
-      # GITHUB_TOKEN minted for a spikeforge-hub run has no read access to
-      # it and an anonymous HTTPS clone dies non-interactively ("could not
-      # read Username for 'https://github.com'"). Rather than a broad PAT,
-      # load a deploy key scoped to read-only access on just that one repo
-      # (added there as a repo-level deploy key; its private half is stored
-      # here as the SPIKEFORGE_DEPLOY_KEY secret) so the fallback below can
-      # clone it over SSH instead.
-      - name: Load the spikeforge deploy key
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SPIKEFORGE_DEPLOY_KEY }}
-
-      - name: Trust github.com's host key
-        run: ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-
       - name: Install the core dependency
         run: |
-          # Prefer the published core distribution. `spikeforge` 0.3.0 is not
-          # on PyPI yet, so fall back to a git checkout of `main` over SSH
-          # (see the deploy-key step above) as a stopgap until 0.3.0 is
-          # published. `spikeforge` moved into a monorepo
-          # (capsize-games/spikeforge) where the installable package lives
-          # under `packages/spikeforge`, not the repo root, so the fallback
-          # needs the `#subdirectory=` fragment or pip fails with "does not
-          # appear to be a Python project".
+          # The core repository is public; the fallback needs no credentials.
           pip install "spikeforge~=0.3.0" \
-            || pip install "git+ssh://git@github.com/capsize-games/spikeforge.git@main#subdirectory=packages/spikeforge"
+            || pip install "git+https://github.com/Capsize-Games/spikeforge.git@main#subdirectory=packages/spikeforge"
 
       - name: Install spikeforge-hub
         run: pip install -e ".[dev,nir]"
