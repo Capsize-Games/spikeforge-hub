@@ -8,10 +8,8 @@ does not depend on the hub.
 The local task contract is `python -m compileall -q spikeforge_hub` for the
 build check, `ruff check .` for lint, and `pytest` for tests. Install the
 development extras with `pip install -e ".[dev,nir]"` after installing the
-private `spikeforge` core dependency as described in `README.md`. The existing
-CI job uses the repository-scoped `spikeforge-hub-ci` local runner and a
-read-only deploy key for that private dependency; never replace it with a
-broader credential or commit credential material.
+private `spikeforge` core dependency as described in `README.md`. CI runs on GitHub-hosted Ubuntu workers. The core dependency is public and
+its fallback checkout uses anonymous HTTPS; no deploy key is required.
 
 The hub's model catalog and curation policy are runtime data. Changes to
 catalog entries, download verification, cache paths, or promotion rules need
