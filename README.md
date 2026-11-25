@@ -4,7 +4,7 @@
 [![Discord](https://img.shields.io/badge/Discord-Join%20the%20community-5865F2?logo=discord&logoColor=white)](https://capsizegames.com/discord)
 [![Status: pre-1.0](https://img.shields.io/badge/status-pre--1.0-orange.svg)](https://github.com/capsize-games/spikeforge)
 [![License: BSD-3-Clause](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](LICENSE)
-[![Python 3.10–3.13](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-3776AB.svg)](https://www.python.org/downloads/)
+[![Python 3.11–3.13](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-3776AB.svg)](https://www.python.org/downloads/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/capsize-games/spikeforge/blob/main/CONTRIBUTING.md)
 
@@ -30,12 +30,22 @@ entry into a loaded `spikeforge` model.
 pip install spikeforge-hub
 ```
 
-`spikeforge-hub` is pre-1.0 and not yet published to PyPI (neither is its
-`spikeforge` dependency). Until then, install both from source:
+`spikeforge-hub` is pre-1.0. The canonical release publisher is the
+[`spikeforge` monorepo](https://github.com/Capsize-Games/spikeforge):
+PyPI `spikeforge-hub` builds from `packages/spikeforge-hub` there, and the
+supported dependency matrix is recorded in [`docs/RELEASE.md`](docs/RELEASE.md)
+(canonical authority: `compatibility.json` in the monorepo). This repository
+is a source mirror of that path at `0.1.0`; install the matrix core first:
+
+```bash
+pip install "spikeforge~=0.6.3"
+pip install "git+https://github.com/capsize-games/spikeforge-hub.git@main"
+```
+
+If the PyPI window is paused, fall back to the monorepo source for core:
 
 ```bash
 pip install "git+https://github.com/capsize-games/spikeforge.git@main#subdirectory=packages/spikeforge"
-pip install "git+https://github.com/capsize-games/spikeforge-hub.git@main"
 ```
 
 ## Development
